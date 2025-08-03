@@ -18,8 +18,13 @@ func must[T any](obj T, err error) T {
 func main() {
 	defer midi.CloseDriver()
 
-	midiInput := must(NewMidiInput("DJControl Inpulse 500 MIDI 1"))
+	log.Println("Starting...")
+	controller := must(NewController("DJControl Inpulse 500 MIDI 1"))
+	controller.AddMapping(ButtonMapping{1, 7}) // play left
+	controller.AddMapping(ControlMapping{1, 0}) // volume left
 
 	time.Sleep(time.Second * 20)
-	midiInput.Stop()
+	log.Println("Stopping...")
+	controller.Stop()
+	log.Println("Stopped.")
 }
