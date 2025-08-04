@@ -1,0 +1,13 @@
+controller:
+  - portName: DJControl Inpulse 500 MIDI 1
+    vendorID: 0x45e
+    productID: 0x285
+    mappings:
+      - type: button
+        midiChannel: 1
+        midiKey: 7
+        key: south
+      - type: control
+        midiChannel: 1
+        midiController: 0
+        axis: left-y

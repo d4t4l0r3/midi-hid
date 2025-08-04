@@ -7,6 +7,14 @@ import (
 	"github.com/bendahl/uinput"
 )
 
+type ControllerList []*Controller
+
+func (cl ControllerList) Stop() {
+	for _, controller := range cl {
+		controller.Stop()
+	}
+}
+
 type Controller struct {
 	midiInput *MidiInput
 	mappings []Mapping
