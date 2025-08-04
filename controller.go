@@ -1,25 +1,31 @@
 package main
 
 import (
-	"log"
 	"gitlab.com/gomidi/midi/v2"
+	"github.com/bendahl/uinput"
 )
 
 type Controller struct {
 	midiInput *MidiInput
 	mappings []Mapping
 	abortChan chan interface{}
+	virtGamepad uinput.Gamepad
 }
 
-func NewController(portName string) (*Controller, error) {
+func NewController(portName string, vendorID, productID uint16) (*Controller, error) {
 	midiInput, err := NewMidiInput(portName)
+	if err != nil {
+		return nil, err
+	}
+
+	virtGamepad, err := uinput.CreateGamepad("/dev/uinput", []byte(portName), vendorID, productID)
 	if err != nil {
 		return nil, err
 	}
 
 	abortChan := make(chan interface{})
 
-	controller := &Controller{midiInput, nil, abortChan}
+	controller := &Controller{midiInput, nil, abortChan, virtGamepad}
 
 	go func() {
 		for {
@@ -42,12 +48,11 @@ func (c *Controller) AddMapping(mapping Mapping) {
 func (c Controller) Stop() {
 	c.midiInput.Stop()
 	c.abortChan <- struct{}{}
+	c.virtGamepad.Close()
 }
 
 func (c Controller) update(msg midi.Message) {
 	for _, mapping := range c.mappings {
-		if mapping.Is(msg) {
-			log.Println("Mapping triggered!\n")
-		}
+		mapping.TriggerIfMatch(msg, c.virtGamepad)
 	}
 }
