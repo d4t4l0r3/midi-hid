@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"gitlab.com/gomidi/midi/v2"
 	"github.com/bendahl/uinput"
 )
@@ -53,6 +55,9 @@ func (c Controller) Stop() {
 
 func (c Controller) update(msg midi.Message) {
 	for _, mapping := range c.mappings {
-		mapping.TriggerIfMatch(msg, c.virtGamepad)
+		err := mapping.TriggerIfMatch(msg, c.virtGamepad)
+		if err != nil {
+			log.Printf("Error in Mapping \"%s\": %v\n", mapping.Comment(), err)
+		}
 	}
 }

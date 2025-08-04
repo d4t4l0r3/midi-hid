@@ -10,6 +10,7 @@ import (
 type Mapping interface {
 	Is(midi.Message) bool
 	TriggerIfMatch(midi.Message, uinput.Gamepad) error
+	Comment() string
 }
 
 type ButtonMapping struct {
@@ -43,6 +44,10 @@ func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamep
 	}
 
 	return nil
+}
+
+func (m ButtonMapping) Comment() string {
+	return m.comment
 }
 
 type ControllerAxis int
@@ -101,4 +106,8 @@ func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Game
 	}
 
 	return nil
+}
+
+func (m ControlMapping) Comment() string {
+	return m.comment
 }
