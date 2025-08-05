@@ -3,11 +3,13 @@ controller:
     vendorID: 0x45e
     productID: 0x285
     mappings:
-      - type: button
+      - comment: Play left
+        type: button
         midiChannel: 1
         midiKey: 7
         button: south
-      - type: control
+      - comment: Volume left
+        type: control
         midiChannel: 1
         midiController: 0
         axis: left-y
