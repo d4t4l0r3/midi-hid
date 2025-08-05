@@ -7,9 +7,41 @@ controller:
         type: button
         midiChannel: 1
         midiKey: 7
+        button: west
+      - comment: Hotcue 1 left
+        type: button
+        midiChannel: 6
+        midiKey: 0
+        button: north
+      - comment: Hotcue 5 left
+        type: button
+        midiChannel: 6
+        midiKey: 4
         button: south
+      - comment: Play right
+        type: button
+        midiChannel: 2
+        midiKey: 7
+        button: east
       - comment: Volume left
         type: control
         midiChannel: 1
         midiController: 0
         axis: left-y
+      - comment: Volume right
+        type: control
+        midiChannel: 2
+        midiController: 0
+        axis: right-y
+      - comment: Filter left
+        type: control
+        midiChannel: 1
+        midiController: 1
+        axis: left-x
+        isSigned: true
+      - comment: Filter right
+        type: control
+        midiChannel: 2
+        midiController: 1
+        axis: right-x
+        isSigned: true
