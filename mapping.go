@@ -34,10 +34,15 @@ func (m ButtonMapping) Is(msg midi.Message) bool {
 
 func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamepad) error {
 	if m.Is(msg) {
+		var velocity uint8
+		msg.GetNoteOn(nil, nil, &velocity)
 		switch msg.Type() {
 		case midi.NoteOnMsg:
-			log.Printf("%s: Button down\n", m.comment)
-			return virtGamepad.ButtonDown(m.gamepadKey)
+			if velocity != 0 {
+				log.Printf("%s: Button down\n", m.comment)
+				return virtGamepad.ButtonDown(m.gamepadKey)
+			}
+			fallthrough // if reached here, velocity is 0 -> NoteOff
 		case midi.NoteOffMsg:
 			log.Printf("%s: Button up\n", m.comment)
 			return virtGamepad.ButtonUp(m.gamepadKey)
