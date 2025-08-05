@@ -1,4 +1,4 @@
-module datalore/midi-hid
+module git.datalore.sh/datalore/midi-hid
 
 go 1.24.5
 
