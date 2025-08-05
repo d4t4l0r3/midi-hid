@@ -2,7 +2,8 @@ package main
 
 import (
 	"log"
-	"time"
+	"os"
+	"os/signal"
 
 	"gitlab.com/gomidi/midi/v2"
 )
@@ -23,5 +24,8 @@ func main() {
 	controllerList := must(config.Construct())
 	defer controllerList.Stop()
 
-	time.Sleep(time.Second * 20)
+	// wait for SIGINT
+	sigintChan := make(chan os.Signal, 1)
+	signal.Notify(sigintChan, os.Interrupt)
+	<-sigintChan
 }
