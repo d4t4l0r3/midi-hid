@@ -6,7 +6,7 @@ controller:
       - type: button
         midiChannel: 1
         midiKey: 7
-        key: south
+        button: south
       - type: control
         midiChannel: 1
         midiController: 0

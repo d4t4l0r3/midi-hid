@@ -9,25 +9,25 @@ import (
 )
 
 type Config struct {
-	Controller []ControllerConfig
+	Controller []ControllerConfig `yaml:"controller"`
 }
 
 type ControllerConfig struct {
-	PortName string
-	VendorID uint16
-	ProductID uint16
-	Mappings []MappingConfig
+	PortName string `yaml:"portName"`
+	VendorID uint16 `yaml:"vendorID"`
+	ProductID uint16 `yaml:"productID"`
+	Mappings []MappingConfig `yaml:"mappings"`
 }
 
 type MappingConfig struct {
-	Comment string
-	Type MappingType
-	MidiChannel uint8
-	MidiKey uint8
-	MidiController uint8
-	Button ButtonName
-	Axis AxisName
-	IsSigned bool
+	Comment string `yaml:"comment"`
+	Type MappingType `yaml:"type"`
+	MidiChannel uint8 `yaml:"midiChannel"`
+	MidiKey uint8 `yaml:"midiKey"`
+	MidiController uint8 `yaml:"midiController"`
+	Button ButtonName `yaml:"button"`
+	Axis AxisName `yaml:"axis"`
+	IsSigned bool `yaml:"isSigned"`
 }
 
 type MappingType string
@@ -128,7 +128,7 @@ func (bn ButtonName) Construct() (int, error) {
 	case ButtonWest:
 		return uinput.ButtonWest, nil
 	default:
-		return -1, fmt.Errorf("Invalid button name")
+		return -1, fmt.Errorf("Invalid button name \"%s\"", bn)
 	}
 }
 
@@ -143,6 +143,6 @@ func (an AxisName) Construct() (ControllerAxis, error) {
 	case AxisRightY:
 		return RightY, nil
 	default:
-		return -1, fmt.Errorf("Invalid axis name")
+		return -1, fmt.Errorf("Invalid axis name \"%s\"", an)
 	}
 }
