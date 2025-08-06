@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 
+	"github.com/charmbracelet/log"
 	"gitlab.com/gomidi/midi/v2"
 	"github.com/bendahl/uinput"
 )
@@ -39,12 +39,12 @@ func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamep
 		switch msg.Type() {
 		case midi.NoteOnMsg:
 			if velocity != 0 {
-				log.Printf("%s: Button down\n", m.comment)
+				log.Debugf("%s: Button down", m.comment)
 				return virtGamepad.ButtonDown(m.gamepadKey)
 			}
 			fallthrough // if reached here, velocity is 0 -> NoteOff
 		case midi.NoteOffMsg:
-			log.Printf("%s: Button up\n", m.comment)
+			log.Debugf("%s: Button up", m.comment)
 			return virtGamepad.ButtonUp(m.gamepadKey)
 		default:
 			return fmt.Errorf("Invalid message type triggered ButtonMapping")
@@ -101,7 +101,7 @@ func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Game
 			valueNormalised -= 1
 		}
 
-		log.Printf("%s: value %v\n", m.comment, valueNormalised)
+		log.Debugf("%s: value %v", m.comment, valueNormalised)
 
 		switch m.axis {
 		case LeftX:

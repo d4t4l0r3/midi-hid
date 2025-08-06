@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"log"
 	"os"
 	"os/signal"
 
+	"github.com/charmbracelet/log"
 	"gitlab.com/gomidi/midi/v2"
 )
 
@@ -29,7 +29,11 @@ func main() {
 	flag.BoolVar(&printDebugMsgs, "debug", false, "Print debug messages")
 	flag.Parse()
 
-	log.Println("Starting...")
+	if printDebugMsgs {
+		log.SetLevel(log.DebugLevel)
+	}
+
+	log.Info("Starting...")
 	config := must(ParseConfig(configPath))
 	controllerList := must(config.Construct())
 	defer controllerList.Stop()
