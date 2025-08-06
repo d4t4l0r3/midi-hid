@@ -50,7 +50,7 @@ const (
 func ParseConfig(path string) (Config, error) {
 	var config Config
 
-	buffer, err := os.ReadFile(path)
+	buffer, err := os.ReadFile(os.ExpandEnv(path))
 	if err != nil {
 		return config, err
 	}

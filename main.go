@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -19,8 +20,17 @@ func must[T any](obj T, err error) T {
 func main() {
 	defer midi.CloseDriver()
 
+	var (
+		configPath string
+		printDebugMsgs bool
+	)
+
+	flag.StringVar(&configPath, "f", "$HOME/.config/midi-hid/config.yaml", "Config file")
+	flag.BoolVar(&printDebugMsgs, "debug", false, "Print debug messages")
+	flag.Parse()
+
 	log.Println("Starting...")
-	config := must(ParseConfig("config.yaml"))
+	config := must(ParseConfig(configPath))
 	controllerList := must(config.Construct())
 	defer controllerList.Stop()
 
