@@ -10,7 +10,8 @@ Install with
 go install git.datalore.sh/datalore/midi-hid@latest
 ```
 
-and run it with `midi-hid`. It reads `config.yaml` from its current working directory, creates the configured virtual gamepads and translates the inputs until SIGINT is received.
+and run it with `midi-hid`. If no config file is specified, it reads `~/.config/midi-hid/config.yaml`.
+Every configured midi controller will be represented by a virtual gamepad, and the inputs will be translated until SIGINT is received.
 
 See the provided example config on how to configure your controller, it should be pretty self-explanatory.
 
