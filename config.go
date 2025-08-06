@@ -41,6 +41,18 @@ const (
 	ButtonEast ButtonName = "east"
 	ButtonSouth ButtonName = "south"
 	ButtonWest ButtonName = "west"
+	ButtonL1 ButtonName = "l1"
+	ButtonL2 ButtonName = "l2"
+	ButtonL3 ButtonName = "l3"
+	ButtonR1 ButtonName = "r1"
+	ButtonR2 ButtonName = "r2"
+	ButtonR3 ButtonName = "r3"
+	ButtonSelect ButtonName = "select"
+	ButtonStart ButtonName = "start"
+	ButtonDpadUp ButtonName = "dpad-up"
+	ButtonDpadDown ButtonName = "dpad-down"
+	ButtonDpadLeft ButtonName = "dpad-left"
+	ButtonDpadRight ButtonName = "dpad-right"
 	AxisLeftX AxisName = "left-x"
 	AxisLeftY AxisName = "left-y"
 	AxisRightX AxisName = "right-x"
@@ -127,6 +139,30 @@ func (bn ButtonName) Construct() (int, error) {
 		return uinput.ButtonSouth, nil
 	case ButtonWest:
 		return uinput.ButtonWest, nil
+	case ButtonL1:
+		return uinput.ButtonBumperLeft, nil
+	case ButtonL2:
+		return uinput.ButtonTriggerLeft, nil
+	case ButtonL3:
+		return uinput.ButtonThumbLeft, nil
+	case ButtonR1:
+		return uinput.ButtonBumperRight, nil
+	case ButtonR2:
+		return uinput.ButtonTriggerRight, nil
+	case ButtonR3:
+		return uinput.ButtonThumbRight, nil
+	case ButtonSelect:
+		return uinput.ButtonSelect, nil
+	case ButtonStart:
+		return uinput.ButtonStart, nil
+	case ButtonDpadUp:
+		return uinput.ButtonDpadUp, nil
+	case ButtonDpadDown:
+		return uinput.ButtonDpadDown, nil
+	case ButtonDpadLeft:
+		return uinput.ButtonDpadLeft, nil
+	case ButtonDpadRight:
+		return uinput.ButtonDpadRight, nil
 	default:
 		return -1, fmt.Errorf("Invalid button name \"%s\"", bn)
 	}
