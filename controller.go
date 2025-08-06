@@ -22,6 +22,11 @@ type Controller struct {
 }
 
 func NewController(portName string, vendorID, productID uint16) (*Controller, error) {
+	if vendorID == 0 && productID == 0 {
+		// if no IDs were defined, imitate XBox 360 controller
+		vendorID = 0x45e
+		productID = 0x285
+	}
 	midiInput, err := NewMidiInput(portName)
 	if err != nil {
 		return nil, err
