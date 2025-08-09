@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/charmbracelet/log"
 	"gitlab.com/gomidi/midi/v2"
@@ -39,12 +40,12 @@ func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamep
 		switch msg.Type() {
 		case midi.NoteOnMsg:
 			if velocity != 0 {
-				log.Debugf("%s: Button down", m.comment)
+				log.Debug(m.comment, "status", "down")
 				return virtGamepad.ButtonDown(m.gamepadKey)
 			}
 			fallthrough // if reached here, velocity is 0 -> NoteOff
 		case midi.NoteOffMsg:
-			log.Debugf("%s: Button up", m.comment)
+			log.Debug(m.comment, "status", "up")
 			return virtGamepad.ButtonUp(m.gamepadKey)
 		default:
 			return fmt.Errorf("Invalid message type triggered ButtonMapping")
@@ -73,6 +74,7 @@ type ControlMapping struct {
 	midiController uint8
 	axis ControllerAxis
 	isSigned bool
+	deadzone float64
 }
 
 func (m ControlMapping) Is(msg midi.Message) bool {
@@ -89,29 +91,33 @@ func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Game
 	if m.Is(msg) {
 		var (
 			valueAbsolute uint8
-			valueNormalised float32
+			valueNormalised float64
 		)
 
 		msg.GetControlChange(nil, nil, &valueAbsolute)
 
 		// value is 0-127, normalise
-		valueNormalised = float32(valueAbsolute) / 127
+		valueNormalised = float64(valueAbsolute) / 127
 		if m.isSigned {
 			valueNormalised *= 2
 			valueNormalised -= 1
 		}
 
-		log.Debugf("%s: value %v", m.comment, valueNormalised)
+		if math.Abs(valueNormalised) < m.deadzone {
+			valueNormalised = 0
+		}
+
+		log.Debug(m.comment, "value", valueNormalised, "deadzone", m.deadzone)
 
 		switch m.axis {
 		case LeftX:
-			return virtGamepad.LeftStickMoveX(valueNormalised)
+			return virtGamepad.LeftStickMoveX(float32(valueNormalised))
 		case LeftY:
-			return virtGamepad.LeftStickMoveY(valueNormalised)
+			return virtGamepad.LeftStickMoveY(float32(valueNormalised))
 		case RightX:
-			return virtGamepad.RightStickMoveX(valueNormalised)
+			return virtGamepad.RightStickMoveX(float32(valueNormalised))
 		case RightY:
-			return virtGamepad.RightStickMoveY(valueNormalised)
+			return virtGamepad.RightStickMoveY(float32(valueNormalised))
 		}
 	}
 

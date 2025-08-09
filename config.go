@@ -6,6 +6,7 @@ import (
 
 	"github.com/goccy/go-yaml"
 	"github.com/bendahl/uinput"
+	"github.com/charmbracelet/log"
 )
 
 type Config struct {
@@ -28,6 +29,7 @@ type MappingConfig struct {
 	Button ButtonName `yaml:"button"`
 	Axis AxisName `yaml:"axis"`
 	IsSigned bool `yaml:"isSigned"`
+	Deadzone float64 `yaml:"deadzone"`
 }
 
 type MappingType string
@@ -116,6 +118,8 @@ func (mc MappingConfig) Construct() (Mapping, error) {
 			return ButtonMapping{}, err
 		}
 
+		log.Debug("Parsed button mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiKey", mc.MidiKey, "button", button)
+
 		return ButtonMapping{mc.Comment, mc.MidiChannel, mc.MidiKey, button}, nil
 	case ControlMappingType:
 		axis, err := mc.Axis.Construct()
@@ -123,7 +127,9 @@ func (mc MappingConfig) Construct() (Mapping, error) {
 			return ControlMapping{}, err
 		}
 
-		return ControlMapping{mc.Comment, mc.MidiChannel, mc.MidiController, axis, mc.IsSigned}, nil
+		log.Debug("Parsed control mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiController", mc.MidiController, "axis", axis, "isSigned", mc.IsSigned, "deadzone", mc.Deadzone)
+
+		return ControlMapping{mc.Comment, mc.MidiChannel, mc.MidiController, axis, mc.IsSigned, mc.Deadzone}, nil
 	default:
 		return ButtonMapping{}, fmt.Errorf("Invalid mapping type")
 	}
