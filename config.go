@@ -9,10 +9,12 @@ import (
 	"github.com/charmbracelet/log"
 )
 
+// Config is the root type of a config, consisting of an arbitrary number of controller configs.
 type Config struct {
 	Controller []ControllerConfig `yaml:"controller"`
 }
 
+// A ControllerConfig represents the data needed to later construct a Controller object.
 type ControllerConfig struct {
 	PortName string `yaml:"portName"`
 	VendorID uint16 `yaml:"vendorID"`
@@ -20,6 +22,7 @@ type ControllerConfig struct {
 	Mappings []MappingConfig `yaml:"mappings"`
 }
 
+// A MappingConfig consists of all data possibly needed to construct a mapping, both button and control.
 type MappingConfig struct {
 	Comment string `yaml:"comment"`
 	Type MappingType `yaml:"type"`
@@ -61,6 +64,8 @@ const (
 	AxisRightY AxisName = "right-y"
 )
 
+// ParseConfig takes the path to a config file and returns the parsed Config object,
+// or an error if thrown.
 func ParseConfig(path string) (Config, error) {
 	var config Config
 
@@ -77,6 +82,8 @@ func ParseConfig(path string) (Config, error) {
 	return config, nil
 }
 
+// Construct iterates over all ControllerConfigs and constructs the Controller objects.
+// In case of a failure, it aborts and returns an error.
 func (config Config) Construct() (ControllerList, error) {
 	var controllerList ControllerList
 
@@ -92,6 +99,9 @@ func (config Config) Construct() (ControllerList, error) {
 	return controllerList, nil
 }
 
+// Construct builds a Controller object and its corresponding mappings.
+// Aborts and returns an error if the midi port was not found or one of
+// the Mappings is invalid.
 func (cc ControllerConfig) Construct() (*Controller, error) {
 	actualController, err := NewController(cc.PortName, cc.VendorID, cc.ProductID)
 	if err != nil {
@@ -110,6 +120,7 @@ func (cc ControllerConfig) Construct() (*Controller, error) {
 	return actualController, nil
 }
 
+// Construct builds the Mapping object. Returns an error if config is invalid.
 func (mc MappingConfig) Construct() (Mapping, error) {
 	switch mc.Type {
 	case ButtonMappingType:
@@ -135,6 +146,8 @@ func (mc MappingConfig) Construct() (Mapping, error) {
 	}
 }
 
+// Construct converts a ButtonName to its corresponding key code, or returns an error if the
+// name is unknown.
 func (bn ButtonName) Construct() (int, error) {
 	switch bn {
 	case ButtonNorth:
@@ -174,6 +187,8 @@ func (bn ButtonName) Construct() (int, error) {
 	}
 }
 
+// Construct converts an AxisName into the internal representation for a ControllerAxis.
+// Returns an error if AxisName is invalid.
 func (an AxisName) Construct() (ControllerAxis, error) {
 	switch an {
 	case AxisLeftX:

@@ -6,14 +6,18 @@ import (
 	"github.com/bendahl/uinput"
 )
 
+// A ControllerList is a list of controllers. Duh.
 type ControllerList []*Controller
 
+// Stop iterates over all Controller objects and Stops their update loops and MIDI connections.
+// Always call this for a clean shutdown. Meant to be deferred.
 func (cl ControllerList) Stop() {
 	for _, controller := range cl {
 		controller.Stop()
 	}
 }
 
+// A Controller object manages the translation from MIDI to uinput.
 type Controller struct {
 	midiInput *MidiInput
 	mappings []Mapping
@@ -21,6 +25,8 @@ type Controller struct {
 	virtGamepad uinput.Gamepad
 }
 
+// NewController builds a new Controller object reading from the MIDI port specified by portName,
+// and registers a virtual uinput-Gamepad using vendorID and productID.
 func NewController(portName string, vendorID, productID uint16) (*Controller, error) {
 	if vendorID == 0 && productID == 0 {
 		// if no IDs were defined, imitate XBox 360 controller
@@ -55,10 +61,12 @@ func NewController(portName string, vendorID, productID uint16) (*Controller, er
 	return controller, nil
 }
 
+// AddMapping adds a mapping to the Controller.
 func (c *Controller) AddMapping(mapping Mapping) {
 	c.mappings = append(c.mappings, mapping)
 }
 
+// Stop quits the update loop and terminates all corresponding connections.
 func (c Controller) Stop() {
 	c.midiInput.Stop()
 	c.abortChan <- struct{}{}

@@ -9,12 +9,14 @@ import (
 	"github.com/bendahl/uinput"
 )
 
+// A Mapping is an interface for all types of Mappings.
 type Mapping interface {
 	Is(midi.Message) bool
 	TriggerIfMatch(midi.Message, uinput.Gamepad) error
 	Comment() string
 }
 
+// A ButtonMapping maps a MIDI Note to a gamepad button.
 type ButtonMapping struct {
 	comment string
 	midiChannel uint8
@@ -22,6 +24,7 @@ type ButtonMapping struct {
 	gamepadKey int
 }
 
+// Is checks if the MIDI message msg triggers this Mapping, without actually triggering it.
 func (m ButtonMapping) Is(msg midi.Message) bool {
 	var channel, key uint8
 
@@ -33,6 +36,8 @@ func (m ButtonMapping) Is(msg midi.Message) bool {
 	}
 }
 
+// TriggerIfMatch checks if the MIDI message msg triggers this Mapping, and if so,
+// sends the corresponding input to virtGamepad.
 func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamepad) error {
 	if m.Is(msg) {
 		var velocity uint8
@@ -55,6 +60,7 @@ func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamep
 	return nil
 }
 
+// Comment returns the Mappings comment.
 func (m ButtonMapping) Comment() string {
 	return m.comment
 }
@@ -77,6 +83,7 @@ type ControlMapping struct {
 	deadzone float64
 }
 
+// Is checks if the MIDI message msg triggers this Mapping, without actually triggering it.
 func (m ControlMapping) Is(msg midi.Message) bool {
 	var channel, controller uint8
 
@@ -87,6 +94,8 @@ func (m ControlMapping) Is(msg midi.Message) bool {
 	}
 }
 
+// TriggerIfMatch checks if the MIDI message msg triggers this Mapping, and if so,
+// sends the corresponding input to virtGamepad.
 func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamepad) error {
 	if m.Is(msg) {
 		var (
@@ -124,6 +133,7 @@ func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Game
 	return nil
 }
 
+// Comment returns the Mappings comment.
 func (m ControlMapping) Comment() string {
 	return m.comment
 }
