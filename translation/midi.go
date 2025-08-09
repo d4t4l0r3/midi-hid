@@ -1,4 +1,4 @@
-package main
+package translation
 
 import (
 	"gitlab.com/gomidi/midi/v2"
@@ -6,12 +6,16 @@ import (
 	_ "gitlab.com/gomidi/midi/v2/drivers/rtmididrv"
 )
 
+// A MidiInput represents a MIDI input and provides a channel to read incoming
+// Messages, as well as a Stop function to terminate the connection.
 type MidiInput struct {
 	input drivers.In
 	Messages chan midi.Message
 	Stop func()
 }
 
+// NewMidiInput initialises a MidiInput object connected to the MIDI port specified
+// by portName. Retuns an error if the connection fails.
 func NewMidiInput(portName string) (*MidiInput, error) {
 	input, err := midi.FindInPort(portName)
 	if err != nil {

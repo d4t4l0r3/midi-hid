@@ -39,9 +39,11 @@ controller:
         midiController: 1
         axis: left-x
         isSigned: true
+        deadzone: 0.01
       - comment: Filter right
         type: control
         midiChannel: 2
         midiController: 1
         axis: right-x
         isSigned: true
+        deadzone: 0.01

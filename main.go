@@ -1,10 +1,13 @@
 package main
 
 import (
-	"log"
+	"flag"
 	"os"
 	"os/signal"
 
+	"git.datalore.sh/datalore/midi-hid/config"
+
+	"github.com/charmbracelet/log"
 	"gitlab.com/gomidi/midi/v2"
 )
 
@@ -19,9 +22,22 @@ func must[T any](obj T, err error) T {
 func main() {
 	defer midi.CloseDriver()
 
-	log.Println("Starting...")
-	config := must(ParseConfig("config.yaml"))
-	controllerList := must(config.Construct())
+	var (
+		configPath string
+		printDebugMsgs bool
+	)
+
+	flag.StringVar(&configPath, "f", "$HOME/.config/midi-hid/config.yaml", "Config file")
+	flag.BoolVar(&printDebugMsgs, "debug", false, "Print debug messages")
+	flag.Parse()
+
+	if printDebugMsgs {
+		log.SetLevel(log.DebugLevel)
+	}
+
+	log.Info("Starting...")
+	conf := must(config.ParseConfig(configPath))
+	controllerList := must(conf.Construct())
 	defer controllerList.Stop()
 
 	// wait for SIGINT
