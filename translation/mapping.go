@@ -1,4 +1,4 @@
-package main
+package translation
 
 import (
 	"fmt"
@@ -18,10 +18,10 @@ type Mapping interface {
 
 // A ButtonMapping maps a MIDI Note to a gamepad button.
 type ButtonMapping struct {
-	comment string
-	midiChannel uint8
-	midiKey uint8
-	gamepadKey int
+	CommentStr string
+	MidiChannel uint8
+	MidiKey uint8
+	GamepadKey int
 }
 
 // Is checks if the MIDI message msg triggers this Mapping, without actually triggering it.
@@ -30,7 +30,7 @@ func (m ButtonMapping) Is(msg midi.Message) bool {
 
 	switch {
 	case msg.GetNoteOn(&channel, &key, nil), msg.GetNoteOff(&channel, &key, nil):
-		return (m.midiChannel == channel && m.midiKey == key)
+		return (m.MidiChannel == channel && m.MidiKey == key)
 	default:
 		return false
 	}
@@ -45,13 +45,13 @@ func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamep
 		switch msg.Type() {
 		case midi.NoteOnMsg:
 			if velocity != 0 {
-				log.Debug(m.comment, "status", "down")
-				return virtGamepad.ButtonDown(m.gamepadKey)
+				log.Debug(m.CommentStr, "status", "down")
+				return virtGamepad.ButtonDown(m.GamepadKey)
 			}
 			fallthrough // if reached here, velocity is 0 -> NoteOff
 		case midi.NoteOffMsg:
-			log.Debug(m.comment, "status", "up")
-			return virtGamepad.ButtonUp(m.gamepadKey)
+			log.Debug(m.CommentStr, "status", "up")
+			return virtGamepad.ButtonUp(m.GamepadKey)
 		default:
 			return fmt.Errorf("Invalid message type triggered ButtonMapping")
 		}
@@ -62,7 +62,7 @@ func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamep
 
 // Comment returns the Mappings comment.
 func (m ButtonMapping) Comment() string {
-	return m.comment
+	return m.CommentStr
 }
 
 type ControllerAxis int
@@ -75,12 +75,12 @@ const (
 )
 
 type ControlMapping struct {
-	comment string
-	midiChannel uint8
-	midiController uint8
-	axis ControllerAxis
-	isSigned bool
-	deadzone float64
+	CommentStr string
+	MidiChannel uint8
+	MidiController uint8
+	Axis ControllerAxis
+	IsSigned bool
+	Deadzone float64
 }
 
 // Is checks if the MIDI message msg triggers this Mapping, without actually triggering it.
@@ -88,7 +88,7 @@ func (m ControlMapping) Is(msg midi.Message) bool {
 	var channel, controller uint8
 
 	if msg.GetControlChange(&channel, &controller, nil) {
-		return (m.midiChannel == channel && m.midiController == controller)
+		return (m.MidiChannel == channel && m.MidiController == controller)
 	} else {
 		return false
 	}
@@ -107,18 +107,18 @@ func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Game
 
 		// value is 0-127, normalise
 		valueNormalised = float64(valueAbsolute) / 127
-		if m.isSigned {
+		if m.IsSigned {
 			valueNormalised *= 2
 			valueNormalised -= 1
 		}
 
-		if math.Abs(valueNormalised) < m.deadzone {
+		if math.Abs(valueNormalised) < m.Deadzone {
 			valueNormalised = 0
 		}
 
-		log.Debug(m.comment, "value", valueNormalised, "deadzone", m.deadzone)
+		log.Debug(m.CommentStr, "value", valueNormalised, "deadzone", m.Deadzone)
 
-		switch m.axis {
+		switch m.Axis {
 		case LeftX:
 			return virtGamepad.LeftStickMoveX(float32(valueNormalised))
 		case LeftY:
@@ -135,5 +135,5 @@ func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Game
 
 // Comment returns the Mappings comment.
 func (m ControlMapping) Comment() string {
-	return m.comment
+	return m.CommentStr
 }

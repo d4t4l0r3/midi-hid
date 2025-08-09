@@ -1,8 +1,10 @@
-package main
+package config
 
 import (
 	"fmt"
 	"os"
+
+	"git.datalore.sh/datalore/midi-hid/translation"
 
 	"github.com/goccy/go-yaml"
 	"github.com/bendahl/uinput"
@@ -84,8 +86,8 @@ func ParseConfig(path string) (Config, error) {
 
 // Construct iterates over all ControllerConfigs and constructs the Controller objects.
 // In case of a failure, it aborts and returns an error.
-func (config Config) Construct() (ControllerList, error) {
-	var controllerList ControllerList
+func (config Config) Construct() (translation.ControllerList, error) {
+	var controllerList translation.ControllerList
 
 	for _, controllerConfig := range config.Controller {
 		actualController, err := controllerConfig.Construct()
@@ -102,8 +104,8 @@ func (config Config) Construct() (ControllerList, error) {
 // Construct builds a Controller object and its corresponding mappings.
 // Aborts and returns an error if the midi port was not found or one of
 // the Mappings is invalid.
-func (cc ControllerConfig) Construct() (*Controller, error) {
-	actualController, err := NewController(cc.PortName, cc.VendorID, cc.ProductID)
+func (cc ControllerConfig) Construct() (*translation.Controller, error) {
+	actualController, err := translation.NewController(cc.PortName, cc.VendorID, cc.ProductID)
 	if err != nil {
 		return actualController, err
 	}
@@ -121,28 +123,28 @@ func (cc ControllerConfig) Construct() (*Controller, error) {
 }
 
 // Construct builds the Mapping object. Returns an error if config is invalid.
-func (mc MappingConfig) Construct() (Mapping, error) {
+func (mc MappingConfig) Construct() (translation.Mapping, error) {
 	switch mc.Type {
 	case ButtonMappingType:
 		button, err := mc.Button.Construct()
 		if err != nil {
-			return ButtonMapping{}, err
+			return translation.ButtonMapping{}, err
 		}
 
 		log.Debug("Parsed button mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiKey", mc.MidiKey, "button", button)
 
-		return ButtonMapping{mc.Comment, mc.MidiChannel, mc.MidiKey, button}, nil
+		return translation.ButtonMapping{mc.Comment, mc.MidiChannel, mc.MidiKey, button}, nil
 	case ControlMappingType:
 		axis, err := mc.Axis.Construct()
 		if err != nil {
-			return ControlMapping{}, err
+			return translation.ControlMapping{}, err
 		}
 
 		log.Debug("Parsed control mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiController", mc.MidiController, "axis", axis, "isSigned", mc.IsSigned, "deadzone", mc.Deadzone)
 
-		return ControlMapping{mc.Comment, mc.MidiChannel, mc.MidiController, axis, mc.IsSigned, mc.Deadzone}, nil
+		return translation.ControlMapping{mc.Comment, mc.MidiChannel, mc.MidiController, axis, mc.IsSigned, mc.Deadzone}, nil
 	default:
-		return ButtonMapping{}, fmt.Errorf("Invalid mapping type")
+		return translation.ButtonMapping{}, fmt.Errorf("Invalid mapping type")
 	}
 }
 
@@ -189,16 +191,16 @@ func (bn ButtonName) Construct() (int, error) {
 
 // Construct converts an AxisName into the internal representation for a ControllerAxis.
 // Returns an error if AxisName is invalid.
-func (an AxisName) Construct() (ControllerAxis, error) {
+func (an AxisName) Construct() (translation.ControllerAxis, error) {
 	switch an {
 	case AxisLeftX:
-		return LeftX, nil
+		return translation.LeftX, nil
 	case AxisLeftY:
-		return LeftY, nil
+		return translation.LeftY, nil
 	case AxisRightX:
-		return RightX, nil
+		return translation.RightX, nil
 	case AxisRightY:
-		return RightY, nil
+		return translation.RightY, nil
 	default:
 		return -1, fmt.Errorf("Invalid axis name \"%s\"", an)
 	}

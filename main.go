@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/signal"
 
+	"git.datalore.sh/datalore/midi-hid/config"
+
 	"github.com/charmbracelet/log"
 	"gitlab.com/gomidi/midi/v2"
 )
@@ -34,8 +36,8 @@ func main() {
 	}
 
 	log.Info("Starting...")
-	config := must(ParseConfig(configPath))
-	controllerList := must(config.Construct())
+	conf := must(config.ParseConfig(configPath))
+	controllerList := must(conf.Construct())
 	defer controllerList.Stop()
 
 	// wait for SIGINT

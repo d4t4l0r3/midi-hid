@@ -1,4 +1,4 @@
-package main
+package translation
 
 import (
 	"gitlab.com/gomidi/midi/v2"
