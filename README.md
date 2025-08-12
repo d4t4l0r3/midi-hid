@@ -7,7 +7,7 @@ This software allows mapping and translating of MIDI commands to HID inputs on L
 Install with
 
 ```bash
-go install git.datalore.sh/datalore/midi-hid@latest
+go install github.com/d4t4l0r3/midi-hid@latest
 ```
 
 and run it with `midi-hid`. If no config file is specified, it reads `~/.config/midi-hid/config.yaml`.

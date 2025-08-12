@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"git.datalore.sh/datalore/midi-hid/translation"
+	"github.com/d4t4l0r3/midi-hid/translation"
 
 	"github.com/goccy/go-yaml"
 	"github.com/bendahl/uinput"

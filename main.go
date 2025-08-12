@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 
-	"git.datalore.sh/datalore/midi-hid/config"
+	"github.com/d4t4l0r3/midi-hid/config"
 
 	"github.com/charmbracelet/log"
 	"gitlab.com/gomidi/midi/v2"
