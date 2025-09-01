@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"git.datalore.sh/datalore/midi-hid/translation"
+	"github.com/d4t4l0r3/midi-hid/translation"
 
 	"github.com/goccy/go-yaml"
 	"github.com/bendahl/uinput"
@@ -32,6 +32,7 @@ type MappingConfig struct {
 	MidiKey uint8 `yaml:"midiKey"`
 	MidiController uint8 `yaml:"midiController"`
 	Button ButtonName `yaml:"button"`
+	ButtonNegative ButtonName `yaml:"buttonNegative"`
 	Axis AxisName `yaml:"axis"`
 	IsSigned bool `yaml:"isSigned"`
 	Deadzone float64 `yaml:"deadzone"`
@@ -44,6 +45,7 @@ type AxisName string
 const (
 	ButtonMappingType MappingType = "button"
 	ControlMappingType MappingType = "control"
+	EncoderMappingType MappingType = "encoder"
 	ButtonNorth ButtonName = "north"
 	ButtonEast ButtonName = "east"
 	ButtonSouth ButtonName = "south"
@@ -134,6 +136,20 @@ func (mc MappingConfig) Construct() (translation.Mapping, error) {
 		log.Debug("Parsed button mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiKey", mc.MidiKey, "button", button)
 
 		return translation.ButtonMapping{mc.Comment, mc.MidiChannel, mc.MidiKey, button}, nil
+	case EncoderMappingType:
+		button, err := mc.Button.Construct()
+		if err != nil {
+			return translation.EncoderMapping{}, err
+		}
+
+		buttonNegative, err := mc.ButtonNegative.Construct()
+		if err != nil {
+			return translation.EncoderMapping{}, err
+		}
+
+		log.Debug("Parsed encoder mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiController", mc.MidiController, "button", button, "buttonNegative", buttonNegative)
+
+		return translation.EncoderMapping{mc.Comment, mc.MidiChannel, mc.MidiController, button, buttonNegative}, nil
 	case ControlMappingType:
 		axis, err := mc.Axis.Construct()
 		if err != nil {

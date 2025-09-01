@@ -65,6 +65,53 @@ func (m ButtonMapping) Comment() string {
 	return m.CommentStr
 }
 
+// An EncoderMapping maps a MIDI Controller to two buttons.
+type EncoderMapping struct {
+	CommentStr string
+	MidiChannel uint8
+	MidiController uint8
+	GamepadKeyPositive int
+	GamepadKeyNegative int
+}
+
+// Is checks if the MIDI message msg triggers this Mapping, without actually triggering it.
+func (m EncoderMapping) Is(msg midi.Message) bool {
+	var channel, controller uint8
+
+	if msg.GetControlChange(&channel, &controller, nil) {
+		return (m.MidiChannel == channel && m.MidiController == controller)
+	} else {
+		return false
+	}
+}
+
+// TriggerIfMatch checks if the MIDI message msg triggers this Mapping, and if so,
+// sends the corresponding input to virtGamepad.
+func (m EncoderMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamepad) error {
+	if m.Is(msg) {
+		var valueAbsolute uint8
+
+		msg.GetControlChange(nil, nil, &valueAbsolute)
+		
+		switch valueAbsolute {
+		case 1:
+			log.Debug(m.CommentStr, "status", "increased")
+			return virtGamepad.ButtonPress(m.GamepadKeyPositive)
+		case 127:
+			log.Debug(m.CommentStr, "status", "decreased")
+			return virtGamepad.ButtonPress(m.GamepadKeyNegative)
+		default:
+			return fmt.Errorf("Invalid message type triggered ButtonMapping")
+		}
+	}
+
+	return nil
+}
+
+// Comment returns the Mappings comment.
+func (m EncoderMapping) Comment() string {
+	return m.CommentStr
+}
 type ControllerAxis int
 
 const (
