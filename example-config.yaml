@@ -20,3 +20,9 @@ controller:
         midiChannel: 1
         midiController: 0
         axis: left-y
+      - comment: Loop left
+        type: encoder
+        midiChannel: 1
+        midiController: 14
+        button: dpad-right        # Clockwise
+        buttonNegative: dpad-left # Counter-Clockwise
