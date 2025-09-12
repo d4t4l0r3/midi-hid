@@ -121,7 +121,7 @@ const (
 	RightY
 )
 
-type ControlMapping struct {
+type AxisMapping struct {
 	CommentStr string
 	MidiChannel uint8
 	MidiController uint8
@@ -131,7 +131,7 @@ type ControlMapping struct {
 }
 
 // Is checks if the MIDI message msg triggers this Mapping, without actually triggering it.
-func (m ControlMapping) Is(msg midi.Message) bool {
+func (m AxisMapping) Is(msg midi.Message) bool {
 	var channel, controller uint8
 
 	if msg.GetControlChange(&channel, &controller, nil) {
@@ -143,7 +143,7 @@ func (m ControlMapping) Is(msg midi.Message) bool {
 
 // TriggerIfMatch checks if the MIDI message msg triggers this Mapping, and if so,
 // sends the corresponding input to virtGamepad.
-func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamepad) error {
+func (m AxisMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Gamepad) error {
 	if m.Is(msg) {
 		var (
 			valueAbsolute uint8
@@ -181,6 +181,6 @@ func (m ControlMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Game
 }
 
 // Comment returns the Mappings comment.
-func (m ControlMapping) Comment() string {
+func (m AxisMapping) Comment() string {
 	return m.CommentStr
 }
