@@ -44,7 +44,7 @@ type AxisName string
 
 const (
 	ButtonMappingType MappingType = "button"
-	ControlMappingType MappingType = "control"
+	AxisMappingType MappingType = "axis"
 	EncoderMappingType MappingType = "encoder"
 	ButtonNorth ButtonName = "north"
 	ButtonEast ButtonName = "east"
@@ -150,15 +150,15 @@ func (mc MappingConfig) Construct() (translation.Mapping, error) {
 		log.Debug("Parsed encoder mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiController", mc.MidiController, "button", button, "buttonNegative", buttonNegative)
 
 		return translation.EncoderMapping{mc.Comment, mc.MidiChannel, mc.MidiController, button, buttonNegative}, nil
-	case ControlMappingType:
+	case AxisMappingType:
 		axis, err := mc.Axis.Construct()
 		if err != nil {
-			return translation.ControlMapping{}, err
+			return translation.AxisMapping{}, err
 		}
 
-		log.Debug("Parsed control mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiController", mc.MidiController, "axis", axis, "isSigned", mc.IsSigned, "deadzone", mc.Deadzone)
+		log.Debug("Parsed axis mapping", "comment", mc.Comment, "midiChannel", mc.MidiChannel, "midiController", mc.MidiController, "axis", axis, "isSigned", mc.IsSigned, "deadzone", mc.Deadzone)
 
-		return translation.ControlMapping{mc.Comment, mc.MidiChannel, mc.MidiController, axis, mc.IsSigned, mc.Deadzone}, nil
+		return translation.AxisMapping{mc.Comment, mc.MidiChannel, mc.MidiController, axis, mc.IsSigned, mc.Deadzone}, nil
 	default:
 		return translation.ButtonMapping{}, fmt.Errorf("Invalid mapping type")
 	}
