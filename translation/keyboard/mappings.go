@@ -2,15 +2,14 @@ package keyboard
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/charmbracelet/log"
 	"gitlab.com/gomidi/midi/v2"
 	"github.com/bendahl/uinput"
 )
 
-// A ButtonMapping maps a MIDI Note to a gamepad button.
-type ButtonMapping struct {
+// A KeyMapping maps a MIDI Note to a keyboard key.
+type KeyMapping struct {
 	CommentStr string
 	MidiChannel uint8
 	MidiKey uint8
@@ -18,7 +17,7 @@ type ButtonMapping struct {
 }
 
 // Is checks if the MIDI message msg triggers this Mapping, without actually triggering it.
-func (m ButtonMapping) Is(msg midi.Message) bool {
+func (m KeyMapping) Is(msg midi.Message) bool {
 	var channel, key uint8
 
 	switch {
@@ -31,7 +30,7 @@ func (m ButtonMapping) Is(msg midi.Message) bool {
 
 // TriggerIfMatch checks if the MIDI message msg triggers this Mapping, and if so,
 // sends the corresponding input to virtKeyboard.
-func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtKeyboard uinput.Keyboard) error {
+func (m KeyMapping) TriggerIfMatch(msg midi.Message, virtKeyboard uinput.Keyboard) error {
 	if m.Is(msg) {
 		var velocity uint8
 		msg.GetNoteOn(nil, nil, &velocity)
@@ -54,7 +53,7 @@ func (m ButtonMapping) TriggerIfMatch(msg midi.Message, virtKeyboard uinput.Keyb
 }
 
 // Comment returns the Mappings comment.
-func (m ButtonMapping) Comment() string {
+func (m KeyMapping) Comment() string {
 	return m.CommentStr
 }
 
@@ -89,10 +88,10 @@ func (m EncoderMapping) TriggerIfMatch(msg midi.Message, virtKeyboard uinput.Key
 		switch valueAbsolute {
 		case 1:
 			log.Debug(m.CommentStr, "status", "increased")
-			return virtKeyboard.ButtonPress(m.KeyboardKeyPositive)
+			return virtKeyboard.KeyPress(m.KeyboardKeyPositive)
 		case 127:
 			log.Debug(m.CommentStr, "status", "decreased")
-			return virtKeyboard.ButtonPress(m.KeyboardKeyNegative)
+			return virtKeyboard.KeyPress(m.KeyboardKeyNegative)
 		default:
 			return fmt.Errorf("Invalid message type triggered EncoderMapping")
 		}

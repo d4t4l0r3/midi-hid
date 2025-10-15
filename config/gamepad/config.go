@@ -10,14 +10,6 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-// A ControllerConfig represents the data needed to later construct a Controller object.
-type ControllerConfig struct {
-	PortName string `yaml:"portName"`
-	VendorID uint16 `yaml:"vendorID"`
-	ProductID uint16 `yaml:"productID"`
-	Mappings []MappingConfig `yaml:"mappings"`
-}
-
 // A MappingConfig consists of all data possibly needed to construct a mapping, both button and control.
 type MappingConfig struct {
 	Comment string `yaml:"comment"`
@@ -61,27 +53,6 @@ const (
 	AxisRightX AxisName = "right-x"
 	AxisRightY AxisName = "right-y"
 )
-
-// Construct builds a Controller object and its corresponding mappings.
-// Aborts and returns an error if the midi port was not found or one of
-// the Mappings is invalid.
-func (cc ControllerConfig) Construct() (*translation.Controller, error) {
-	actualController, err := translation.NewController(cc.PortName, cc.VendorID, cc.ProductID)
-	if err != nil {
-		return actualController, err
-	}
-
-	for _, mappingConfig := range cc.Mappings {
-		actualMapping, err := mappingConfig.Construct()
-		if err != nil {
-			return nil, err
-		}
-
-		actualController.AddGamepadMapping(actualMapping)
-	}
-
-	return actualController, nil
-}
 
 // Construct builds the Mapping object. Returns an error if config is invalid.
 func (mc MappingConfig) Construct() (translation.GamepadMapping, error) {
