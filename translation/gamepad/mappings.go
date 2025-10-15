@@ -94,7 +94,7 @@ func (m EncoderMapping) TriggerIfMatch(msg midi.Message, virtGamepad uinput.Game
 			log.Debug(m.CommentStr, "status", "decreased")
 			return virtGamepad.ButtonPress(m.GamepadKeyNegative)
 		default:
-			return fmt.Errorf("Invalid message type triggered ButtonMapping")
+			return fmt.Errorf("Invalid message type triggered EncoderMapping")
 		}
 	}
 

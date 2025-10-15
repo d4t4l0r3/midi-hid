@@ -1,17 +1,17 @@
-package gamepad
+package keyboard
 
 import (
 	"fmt"
 
 	"github.com/d4t4l0r3/midi-hid/translation"
-	"github.com/d4t4l0r3/midi-hid/translation/gamepad"
+	"github.com/d4t4l0r3/midi-hid/translation/keyboard"
 
 	"github.com/bendahl/uinput"
 	"github.com/charmbracelet/log"
 )
 
-// A ControllerConfig represents the data needed to later construct a Controller object.
-type ControllerConfig struct {
+// A KeyboardConfig represents the data needed to later construct a Keyboard object.
+type KeyboardConfig struct {
 	PortName string `yaml:"portName"`
 	VendorID uint16 `yaml:"vendorID"`
 	ProductID uint16 `yaml:"productID"`
@@ -77,14 +77,14 @@ func (cc ControllerConfig) Construct() (*translation.Controller, error) {
 			return nil, err
 		}
 
-		actualController.AddGamepadMapping(actualMapping)
+		actualController.AddMapping(actualMapping)
 	}
 
 	return actualController, nil
 }
 
 // Construct builds the Mapping object. Returns an error if config is invalid.
-func (mc MappingConfig) Construct() (translation.GamepadMapping, error) {
+func (mc MappingConfig) Construct() (translation.KeyboardMapping, error) {
 	switch mc.Type {
 	case ButtonMappingType:
 		button, err := mc.Button.Construct()
