@@ -2,7 +2,7 @@ controller:
   - portName: DJControl Inpulse 500 MIDI 1  # name of the MIDI port to read from. You can find it with aseqdump -l
     vendorID: 0x45e   # vendor ID for the virtual gamepad. Default is 0x45e. See https://gist.github.com/nondebug/aec93dff7f0f1969f4cc2291b24a3171
     productID: 0x285  # product ID for the virtual gamepad. Default is 0x285. See https://gist.github.com/nondebug/aec93dff7f0f1969f4cc2291b24a3171
-    mappings:
+    gamepadMappings:
       - comment: Play left # This is optional, but it can increase comprehensibility. Will also be used in debug output.
         type: button       # Either button or axis. A button can be pressed or released, an axis represents a range of values.
         midiChannel: 1     # MIDI channel to listen to
@@ -26,3 +26,15 @@ controller:
         midiController: 14
         button: dpad-right        # Clockwise
         buttonNegative: dpad-left # Counter-Clockwise
+    keyboardMappings:
+      - comment: Hotcue 2 left
+        type: key
+        midiChannel: 6
+        midiKey: 1
+        key: h
+      - comment: Loop right
+        type: encoder
+        midiChannel: 2
+        midiController: 14
+        key: enter
+        keyNegative: escape
